@@ -30,9 +30,12 @@ jobs:
         run: npm run build
 
       - name: Generate Changelog
+        run: |
+          npx auto-changelog --template keepachangelog > CHANGELOG.md
+
+      - name: Read Changelog
         id: changelog
         run: |
-          npx auto-changelog --template keepachangelog | sed "s/\x1b\[[0-9;]*m//g" > CHANGELOG.md
           changelog=$(cat CHANGELOG.md)
           echo "::set-output name=changelog::${changelog}"
 
