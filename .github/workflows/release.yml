@@ -27,6 +27,11 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          echo "::set-output name=changelog::$(npx auto-changelog --template keepachangelog)"
+
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
