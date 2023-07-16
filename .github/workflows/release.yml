@@ -72,7 +72,7 @@ jobs:
         with:
           github-token: ${{ secrets.PAT_SECRET }}
           script: |
-            const { data: issues } = await github.issues.listForRepo({
+            const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
