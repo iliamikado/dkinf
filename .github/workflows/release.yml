@@ -65,3 +65,27 @@ jobs:
               release_id: ${{ steps.create_release.outputs.id }},
               body: `Changes in this Release\n---\n${{ steps.changelog.outputs.changelog }}\n\nDeployment: [${url}](${url})`
             })
+
+      - name: Close issue
+        id: close_issue
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: issues } = await github.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'RELEASE',
+              sort: 'created',
+              direction: 'desc'
+            })
+            const releaseIssue = issues.find(issue => issue.title.includes(`Release ${{ github.ref }}`))
+            if (releaseIssue) {
+              await github.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: releaseIssue.number,
+                state: 'closed'
+              })
+            }
