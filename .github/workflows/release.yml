@@ -32,27 +32,24 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          npx auto-changelog > CHANGELOG.md
+          npx auto-changelog > CHANGELOG.md 2> /dev/null
           changelog=$(cat CHANGELOG.md)
-          echo "$changelog" > changelog.txt
-      
+          echo "::set-output name=changelog::${changelog}"
+
       - name: Create Release
         id: create_release
-        uses: actions/github-script@v5
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_SECRET }}
         with:
-          github_token: ${{ secrets.PAT_SECRET }}
-          script: |
-            const fs = require('fs');
-            const changelog = fs.readFileSync('changelog.txt', 'utf8');
-            return github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: context.ref.replace('refs/tags/', ''),
-              name: `Release ${context.ref.replace('refs/tags/', '')}`,
-              body: `Changes in this Release\n---\n${changelog}`,
-              draft: false,
-              prerelease: false
-            });
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            ---
+            ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
