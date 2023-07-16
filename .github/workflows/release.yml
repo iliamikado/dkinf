@@ -15,6 +15,7 @@ jobs:
         with:
             fetch-depth: 0
             token: ${{ secrets.PAT_SECRET }}
+            ref: master
 
       - name: Use Node.js
         uses: actions/setup-node@v2
@@ -43,6 +44,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add CHANGELOG.md
           git commit -m "Update CHANGELOG.md"
+          git push origin master
           git push
 
       - name: Create Release
