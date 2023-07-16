@@ -33,11 +33,7 @@ jobs:
         run: git tag
 
       - name: Generate Changelog
-        id: changelog
-        run: |
-          npx auto-changelog > CHANGELOG.md 2> /dev/null
-          changelog=$(cat CHANGELOG.md)
-          echo "::set-output name=changelog::${changelog}"
+        run: npx auto-changelog > CHANGELOG.md 2> /dev/null
 
       - name: Create Release
         id: create_release
@@ -47,12 +43,23 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            ---
-            ${{ steps.changelog.outputs.changelog }}
+          body: "Generating changelog..."
           draft: false
           prerelease: false
+
+      - name: Update Release with Changelog
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.PAT_SECRET }}
+          script: |
+            const fs = require('fs');
+            const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ steps.create_release.outputs.id }},
+              body: `Changes in this Release\n---\n${changelog}`
+            })
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
@@ -70,7 +77,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: ${{ steps.create_release.outputs.id }},
-              body: `Changes in this Release\n---\n${{ steps.changelog.outputs.changelog }}\n\nDeployment: [${url}](${url})`
+              body: `Changes in this Release\n---\n${changelog}\n\nDeployment: [${url}](${url})`
             })
 
       - name: Close issue
