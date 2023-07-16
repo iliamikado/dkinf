@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+            fetch-depth: 0
 
       - name: Use Node.js
         uses: actions/setup-node@v2
@@ -30,12 +30,9 @@ jobs:
         run: npm run build
 
       - name: Generate Changelog
-        run: |
-          npx auto-changelog --template keepachangelog > CHANGELOG.md
-
-      - name: Read Changelog
         id: changelog
         run: |
+          npx auto-changelog --template keepachangelog | sed "s/\x1b\[[0-9;]*m//g" > CHANGELOG.md
           changelog=$(cat CHANGELOG.md)
           echo "::set-output name=changelog::${changelog}"
 
