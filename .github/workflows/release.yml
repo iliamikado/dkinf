@@ -59,7 +59,7 @@ jobs:
           github-token: ${{ secrets.PAT_SECRET }}
           script: |
             const url = `https://${{ github.repository }}.github.io/${{ github.event.repository.name }}/`
-            github.repos.updateRelease({
+            github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: ${{ steps.create_release.outputs.id }},
