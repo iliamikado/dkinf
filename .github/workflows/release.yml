@@ -32,7 +32,7 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          npx auto-changelog | sed "s/\x1b\[[0-9;]*m//g" > CHANGELOG.md
+          npx auto-changelog > CHANGELOG.md
           changelog=$(cat CHANGELOG.md)
           echo "::set-output name=changelog::${changelog}"
 
