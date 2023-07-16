@@ -33,7 +33,7 @@ jobs:
         id: changelog
         run: |
           npx auto-changelog > CHANGELOG.md
-          changelog="$(<CHANGELOG.md)
+          changelog="$(<CHANGELOG.md)"
           echo "::set-output name=changelog::${changelog}"
 
       - name: Create Release
