@@ -36,7 +36,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_SECRET }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
@@ -50,13 +50,13 @@ jobs:
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT_SECRET }}
           publish_dir: ./build
 
       - name: Update Release with deployment link
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PAT_SECRET }}
           script: |
             const url = `https://${{ github.repository }}.github.io/${{ github.event.repository.name }}/`
             github.repos.updateRelease({
@@ -70,7 +70,7 @@ jobs:
         id: close_issue
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PAT_SECRET }}
           script: |
             const { data: issues } = await github.issues.listForRepo({
               owner: context.repo.owner,
